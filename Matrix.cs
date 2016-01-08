@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ObligatoryDestinationAppL4
 {
@@ -33,38 +29,6 @@ namespace ObligatoryDestinationAppL4
                     dots--;
                 }
             }
-        }
-
-        private void FillMatrix()
-        {
-            var lastElem = _n * _n;
-            var dots = lastElem /** _detail*/ / 100;
-            if (lastElem / dots > 2)
-            {
-                while (dots > 0)
-                {
-                    var elem = _rnd.Next(0, lastElem);
-                    _matrix[elem % _n, elem / _n] = 1;
-                    dots--;
-                }
-            }
-            else
-            {
-                FillWith(1);
-                while (dots < lastElem)
-                {
-                    var elem = _rnd.Next(0, lastElem);
-                    _matrix[elem % _n, elem / _n] = 0;
-                    dots++;
-                }
-            }
-        }
-
-        private void FillWith(int with)
-        {
-            for (var i = 0; i < _n; i++)
-                for (var j = 0; j < _n; j++)
-                    _matrix[i, j] = with;
         }
 
         public int FindOblig()

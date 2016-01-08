@@ -12,9 +12,9 @@ namespace ObligatoryDestinationAppL4
     {
         private readonly PointCollection[] _vectOfPoints = new PointCollection[5];
         private readonly Polyline[] _polylines = new Polyline[5];
-        private readonly int[] _depthes = new int[5] { 10, 15, 20, 25, 30 };
+        private readonly int[] _depthes = new int[] { 10, 15, 20, 25, 30 };
 
-        private readonly string[] _nameOfpoly = new string[5]
+        private readonly string[] _nameOfpoly = new string[]
         {
             "poly10",
             "poly15",
@@ -23,7 +23,7 @@ namespace ObligatoryDestinationAppL4
             "poly30",
         };
 
-        private readonly SolidColorBrush[] _brushes = new SolidColorBrush[6]
+        private readonly SolidColorBrush[] _brushes = new SolidColorBrush[]
         {
             Brushes.ForestGreen,
             Brushes.BlueViolet,
@@ -101,54 +101,6 @@ namespace ObligatoryDestinationAppL4
                 pointCollection[i] = new Point(pointCollection[i].X * scaleX + 10, - 15 + CanGraph.Height - pointCollection[i].Y * scaleY);
 
             return pointCollection;
-        }
-
-        private void BuildBothAxes()
-        {
-            const double margin = 10;
-            const double xmin = margin;
-            var ymax = CanGraph.Height - margin;
-            const double step = 10;
-
-            // Make the X axis.
-            var xaxisGeom = new GeometryGroup();
-            xaxisGeom.Children.Add(new LineGeometry(
-                        new Point(0, ymax), new Point(CanGraph.Width, ymax)));
-            for (var x = xmin + step; x <= CanGraph.Width - step; x += step)
-            {
-                xaxisGeom.Children.Add(new LineGeometry(
-                    new Point(x, ymax - margin / 2),
-                    new Point(x, ymax + margin / 2)));
-            }
-
-            var xaxisPath = new Path
-            {
-                StrokeThickness = 1,
-                Stroke = Brushes.Black,
-                Data = xaxisGeom
-            };
-
-            CanGraph.Children.Add(xaxisPath);
-
-            // Make the Y ayis.
-            var yaxisGeom = new GeometryGroup();
-            yaxisGeom.Children.Add(new LineGeometry(
-                            new Point(xmin, 0), new Point(xmin, CanGraph.Height)));
-            for (var y = step; y <= CanGraph.Height - step; y += step)
-            {
-                yaxisGeom.Children.Add(new LineGeometry(
-                    new Point(xmin - margin / 2, y),
-                    new Point(xmin + margin / 2, y)));
-            }
-
-            var yaxisPath = new Path
-            {
-                StrokeThickness = 1,
-                Stroke = Brushes.Black,
-                Data = yaxisGeom
-            };
-
-            CanGraph.Children.Add(yaxisPath);
         }
 
         private void button10_Click(object sender, RoutedEventArgs e)
