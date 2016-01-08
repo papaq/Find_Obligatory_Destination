@@ -1,18 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace ObligatoryDestinationAppL4
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Graph.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class Graph
     {
         private readonly PointCollection[] _vectOfPoints = new PointCollection[5];
         private readonly Polyline[] _polylines = new Polyline[5];
-        private readonly int[] _depthes = new int[5] { 10, 15, 20, 25, 30 };
+        private int[] _depthes = new int[5] { 10, 15, 20, 25, 30 };
 
         private readonly string[] _nameOfpoly = new string[5]
         {
@@ -25,21 +28,21 @@ namespace ObligatoryDestinationAppL4
 
         private readonly SolidColorBrush[] _brushes = new SolidColorBrush[6]
         {
-            Brushes.ForestGreen,
+            Brushes.Aqua,
             Brushes.BlueViolet,
-            Brushes.Blue,
+            Brushes.Chartreuse,
             Brushes.DarkOrange,
             Brushes.DeepPink,
             Brushes.LavenderBlush,
         };
 
-        public MainWindow()
+        public Graph()
         {
             InitializeComponent();
-            //BuildBothAxes();
+            BuildBothAxes();
             InitPointColl();
             InitPolyline();
-            //FillPointColls();
+            FillPointColls();
         }
 
         private void InitPointColl()
@@ -63,28 +66,25 @@ namespace ObligatoryDestinationAppL4
             }
         }
 
-        private void FillPointColls(int i)
+        private void FillPointColls()
         {
-            var matr = new Matrix(_depthes[i]);
-            for (var j = 1; j < 101; j++)
+            for (var i = 0; i < _vectOfPoints.Length; i++)
             {
-                _vectOfPoints[i].Add(new Point(j, matr.FindOblig()));
+                var matr = new Matrix(_depthes[i]);
+                for (var j = 1; j < 101; j++)
+                {
+                    _vectOfPoints[i].Add(new Point(j, matr.FindOblig()));
+                }
+                _vectOfPoints[i] = ConvertPointColl(_vectOfPoints[i]);
             }
-            _vectOfPoints[i] = ConvertPointColl(_vectOfPoints[i]);
         }
 
         private void ShowLine(int num)
         {
             if (CanGraph.Children.Contains(_polylines[num]))
-            {
                 CanGraph.Children.Remove(_polylines[num]);
-                _vectOfPoints[num].Clear();
-            }
             else
-            {
-                FillPointColls(num);
                 CanGraph.Children.Add(_polylines[num]);
-            }
         }
 
         private PointCollection ConvertPointColl(PointCollection pointCollection)
@@ -95,10 +95,10 @@ namespace ObligatoryDestinationAppL4
             maxX = pointCollection.Select(point => point.X).Concat(new[] { maxX }).Max();
 
             var scaleX = CanGraph.Width / maxX;
-            var scaleY = (CanGraph.Height - 50) / maxY;
+            var scaleY = CanGraph.Height / maxY;
 
             for (var i = 0; i < pointCollection.Count; i++)
-                pointCollection[i] = new Point(pointCollection[i].X * scaleX + 10, - 15 + CanGraph.Height - pointCollection[i].Y * scaleY);
+                pointCollection[i] = new Point(pointCollection[i].X * scaleX, CanGraph.Height - pointCollection[i].Y * scaleY);
 
             return pointCollection;
         }

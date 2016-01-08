@@ -9,26 +9,41 @@ namespace ObligatoryDestinationAppL4
     internal class Matrix
     {
         private readonly int _n;
-        private readonly int _detail;
+        //private readonly int _detail;
         private readonly int[,] _matrix;
+        Random _rnd = new Random();
 
-        public Matrix(int n, int detail)
+        public Matrix(int n)
         {
             _n = n;
-            _detail = detail;
+            //_detail = detail;
             _matrix = new int[n, n];
+        }
+
+        private void FillOnePercent()
+        {
+            var lastElem = _n * _n;
+            var dots = lastElem / 100;
+            while (dots > 0)
+            {
+                var elem = _rnd.Next(0, lastElem);
+                if (_matrix[elem % _n, elem / _n] == 0)
+                {
+                    _matrix[elem % _n, elem / _n] = 1;
+                    dots--;
+                }
+            }
         }
 
         private void FillMatrix()
         {
-            var rnd = new Random();
-            var lastElem = _n*_n;
-            var dots = lastElem * _detail / 100;
+            var lastElem = _n * _n;
+            var dots = lastElem /** _detail*/ / 100;
             if (lastElem / dots > 2)
             {
                 while (dots > 0)
                 {
-                    var elem = rnd.Next(0, lastElem);
+                    var elem = _rnd.Next(0, lastElem);
                     _matrix[elem % _n, elem / _n] = 1;
                     dots--;
                 }
@@ -38,7 +53,7 @@ namespace ObligatoryDestinationAppL4
                 FillWith(1);
                 while (dots < lastElem)
                 {
-                    var elem = rnd.Next(0, lastElem);
+                    var elem = _rnd.Next(0, lastElem);
                     _matrix[elem % _n, elem / _n] = 0;
                     dots++;
                 }
@@ -52,9 +67,10 @@ namespace ObligatoryDestinationAppL4
                     _matrix[i, j] = with;
         }
 
-        private int FindOblig()
+        public int FindOblig()
         {
-            FillMatrix();
+            FillOnePercent();
+            //FillMatrix();
             var obligs = 0;
 
             for (var i = 0; i < _n; i++)
@@ -62,14 +78,14 @@ namespace ObligatoryDestinationAppL4
                 var wannie = OnlyOneRow(i);
 
                 // Theo 2
-                if (wannie < -1 && CheckTheo2(i))
+                if (wannie < -1 && CheckTheo2InRow(i))
                     obligs++;
 
                 // Theo 1
                 else
-                    if (wannie > -1 && OnlyOneCol(wannie) == i)
-                        obligs++;
-                
+                    if (wannie > -1 && (OnlyOneCol(wannie) == i || CheckTheo2InCol(wannie, i)))
+                    obligs++;
+
             }
 
             return obligs;
@@ -107,11 +123,22 @@ namespace ObligatoryDestinationAppL4
             return numOfOnes < -1 ? numOfOnes : oneIsHere;
         }
 
-        private bool CheckTheo2(int row)
+        private bool CheckTheo2InRow(int row)
         {
-            for (var i = 0; i < row; i++)
+            for (var i = 0; i < _n; i++)
                 if (_matrix[row, i] == 1 && OnlyOneCol(i) < -1)
                     return false;
+            return true;
+        }
+
+        private bool CheckTheo2InCol(int col, int row)
+        {
+            for (var i = 0; i < _n; i++)
+            {
+                if (_matrix[col, i] == 1 && (i < row || OnlyOneRow(row) < 0))
+                    return false;
+            }
+
             return true;
         }
     }
