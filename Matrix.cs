@@ -1,109 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ObligatoryDestinationAppL4
 {
     internal class Matrix
     {
         private readonly int _n;
-        //private readonly int _detail;
         private readonly int[,] _matrix;
-        Random _rnd = new Random();
+        private readonly int _lastElem;
+        private readonly Random _rnd;
+        
 
-        public Matrix(int n)
+        public Matrix(int n, Random rnd)
         {
             _n = n;
-            //_detail = detail;
+            _rnd = rnd;
+            _lastElem = _n * _n;
             _matrix = new int[n, n];
         }
 
-        private void FillOnePercent()
+        private void FillDetail(int detail)
         {
-            var lastElem = _n * _n;
-            var dots = lastElem / 100;
+            var dots = _lastElem * detail / 100;
             while (dots > 0)
             {
-                var elem = _rnd.Next(0, lastElem);
-                if (_matrix[elem % _n, elem / _n] == 0)
-                {
-                    _matrix[elem % _n, elem / _n] = 1;
-                    dots--;
-                }
+                var elem = _rnd.Next(0, _lastElem);
+                if (_matrix[elem%_n, elem/_n] != 0) continue;
+                _matrix[elem % _n, elem / _n] = 1;
+                dots--;
             }
         }
 
-        public int FindOblig()
+        public bool HasOblig(int detail)
         {
-            FillOnePercent();
-            //FillMatrix();
-            var obligs = 0;
+            FillDetail(detail);
 
             for (var i = 0; i < _n; i++)
             {
-                var wannie = OnlyOneRow(i);
-
-                // Theo 2
-                if (wannie < -1 && CheckTheo2InRow(i))
-                    obligs++;
-
-                // Theo 1
-                else
-                    if (wannie > -1 && (OnlyOneCol(wannie) == i || CheckTheo2InCol(wannie, i)))
-                    obligs++;
-
+                var col = 0;
+                var row = 0;
+                for (var j = 0; j < _n; j++)
+                {
+                    if (_matrix[i, j] == 1)
+                        row++;
+                    if (_matrix[j, i] == 1)
+                        col++;
+                }
+                if (col == 1 || row == 1)
+                    return true;
             }
 
-            return obligs;
-        }
-
-        private int OnlyOneRow(int row)
-        {
-            var oneIsHere = -1;
-            var numOfOnes = -1;
-
-            for (var i = 0; i < _n; i++)
-                if (_matrix[row, i] == 1)
-                {
-                    if (oneIsHere != -1)
-                        numOfOnes--;
-                    oneIsHere = i;
-                }
-
-            return numOfOnes < -1 ? numOfOnes : oneIsHere;
-        }
-
-        private int OnlyOneCol(int col)
-        {
-            var oneIsHere = -1;
-            var numOfOnes = -1;
-
-            for (var i = 0; i < _n; i++)
-                if (_matrix[i, col] == 1)
-                {
-                    if (oneIsHere != -1)
-                        numOfOnes--;
-                    oneIsHere = i;
-                }
-
-            return numOfOnes < -1 ? numOfOnes : oneIsHere;
-        }
-
-        private bool CheckTheo2InRow(int row)
-        {
-            for (var i = 0; i < _n; i++)
-                if (_matrix[row, i] == 1 && OnlyOneCol(i) < -1)
-                    return false;
-            return true;
-        }
-
-        private bool CheckTheo2InCol(int col, int row)
-        {
-            for (var i = 0; i < _n; i++)
-            {
-                if (_matrix[col, i] == 1 && (i < row || OnlyOneRow(row) < 0))
-                    return false;
-            }
-
-            return true;
+            return false;
         }
     }
 }

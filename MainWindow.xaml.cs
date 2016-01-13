@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -65,10 +66,17 @@ namespace ObligatoryDestinationAppL4
 
         private void FillPointColls(int i)
         {
-            var matr = new Matrix(_depthes[i]);
+            var rnd = new Random();
             for (var j = 1; j < 101; j++)
             {
-                _vectOfPoints[i].Add(new Point(j, matr.FindOblig()));
+                var y = 0;
+                for (var k = 1; k < 501; k++)
+                {
+                    var matr = new Matrix(_depthes[i], rnd);
+                    if (matr.HasOblig(j))
+                        y++;
+                }
+                _vectOfPoints[i].Add(new Point(j, y*.2));
             }
             _vectOfPoints[i] = ConvertPointColl(_vectOfPoints[i]);
         }
@@ -89,16 +97,11 @@ namespace ObligatoryDestinationAppL4
 
         private PointCollection ConvertPointColl(PointCollection pointCollection)
         {
-            var maxY = pointCollection[0].Y;
-            maxY = pointCollection.Select(point => point.Y).Concat(new[] { maxY }).Max();
-            var maxX = pointCollection[0].X;
-            maxX = pointCollection.Select(point => point.X).Concat(new[] { maxX }).Max();
-
-            var scaleX = CanGraph.Width / maxX;
-            var scaleY = (CanGraph.Height - 50) / maxY;
+            var scaleX = CanGraph.Width / 100;
+            var scaleY = (CanGraph.Height-50) / 100;
 
             for (var i = 0; i < pointCollection.Count; i++)
-                pointCollection[i] = new Point(pointCollection[i].X * scaleX + 10, - 15 + CanGraph.Height - pointCollection[i].Y * scaleY);
+                pointCollection[i] = new Point(pointCollection[i].X * scaleX + 10, -15 + CanGraph.Height - pointCollection[i].Y * scaleY);
 
             return pointCollection;
         }
